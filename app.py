@@ -1,5 +1,6 @@
 """Flask app for Cupcakes"""
 
+from crypt import methods
 from flask import Flask, request, jsonify, render_template, flash, redirect
 from models import db, connect_db, Cupcake
 from forms import AddCupcakeForm
@@ -16,7 +17,7 @@ connect_db(app)
 ################################
 # HOME
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def root():
     """homepage with cupcake form"""
     form = AddCupcakeForm()
@@ -25,13 +26,10 @@ def root():
         flavor = form.flavor.data
         rating = form.rating.data
         flash(f"Added {flavor} at {rating}/10")
-        return redirect("/api/cupcakes")
+        return redirect("/api/cupcakes", 307)
 
     else:
-        return render_template(
-            "home.html", form=form)
-
-    return render_template("home.html")
+        return render_template("home.html", form=form)
 
 
 ################################

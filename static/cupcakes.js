@@ -1,9 +1,9 @@
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "http://127.0.0.1:5000/api";
 
 
-/** given data about a cupcake, generate html */
+/** Create html */
 
-function generateCupcakeHTML(cupcake) {
+function generateHTML(cupcake) {
   return `
     <div data-cupcake-id=${cupcake.id}>
       <li>
@@ -20,17 +20,17 @@ function generateCupcakeHTML(cupcake) {
 
 /** put initial cupcakes on page. */
 
-async function showInitialCupcakes() {
+async function showCupcakes() {
   const response = await axios.get(`${BASE_URL}/cupcakes`);
 
-  for (let cupcakeData of response.data.cupcakes) {
-    let newCupcake = $(generateCupcakeHTML(cupcakeData));
-    $("#cupcakes-list").append(newCupcake);
+  for (let cupcake of response.data.cupcakes) {
+    let newCupcake = $(generateHTML(cupcake));
+    getElementById("#cupcakes-list").append(newCupcake);
   }
 }
 
 
-/** handle form for adding of new cupcakes */
+/** handle form for adding of new cupcakes 
 
 $("#new-cupcake-form").on("submit", async function (evt) {
   evt.preventDefault();
@@ -48,12 +48,12 @@ $("#new-cupcake-form").on("submit", async function (evt) {
   });
 
   let newCupcake = $(generateCupcakeHTML(newCupcakeResponse.data.cupcake));
-  $("#cupcakes-list").append(newCupcake);
-  $("#new-cupcake-form").trigger("reset");
+  getElementById("#cupcakes-list").append(newCupcake);
+  getElementById("#new-cupcake-form").trigger("reset");
 });
 
 
-/** handle clicking delete: delete cupcake */
+ handle clicking delete: delete cupcake 
 
 $("#cupcakes-list").on("click", ".delete-button", async function (evt) {
   evt.preventDefault();
@@ -63,6 +63,7 @@ $("#cupcakes-list").on("click", ".delete-button", async function (evt) {
   await axios.delete(`${BASE_URL}/cupcakes/${cupcakeId}`);
   $cupcake.remove();
 });
+*/
 
 
-$(showInitialCupcakes);
+$(showCupcakes);
