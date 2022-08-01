@@ -28,6 +28,13 @@ CUPCAKE_DATA_2 = {
     "image": "http://test.com/cupcake2.jpg"
 }
 
+CUPCAKE_DATA_3 = {
+    "flavor": "Martian",
+    "size": "TooBig",
+    "rating": 10,
+    "image": "https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg"
+}
+
 
 class CupcakeViewsTestCase(TestCase):
     """Tests for views of API."""
@@ -71,8 +78,8 @@ class CupcakeViewsTestCase(TestCase):
         with app.test_client() as client:
             url = f"/api/cupcakes/{self.cupcake.id}"
             resp = client.get(url)
-
             self.assertEqual(resp.status_code, 200)
+
             data = resp.json
             self.assertEqual(data, {
                 "cupcake": {
@@ -84,6 +91,12 @@ class CupcakeViewsTestCase(TestCase):
                 }
             })
 
+    def test_get_cupacke_missing(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/123456789"
+            resp = client.get(url)
+            self.assertEqual(resp.status_code, 404)
+
     def test_create_cupcake(self):
         with app.test_client() as client:
             url = "/api/cupcakes"
@@ -92,8 +105,6 @@ class CupcakeViewsTestCase(TestCase):
             self.assertEqual(resp.status_code, 201)
 
             data = resp.json
-
-            # don't know what ID we'll get, make sure it's an int & normalize
             self.assertIsInstance(data['cupcake']['id'], int)
             del data['cupcake']['id']
 
@@ -107,3 +118,43 @@ class CupcakeViewsTestCase(TestCase):
             })
 
             self.assertEqual(Cupcake.query.count(), 2)
+
+    def test_update_cupcake(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake.id}"
+            resp = client.patch(url, json=CUPCAKE_DATA_3)
+            self.assertEqual(resp.status_code, 200)
+
+            data = resp.json
+            self.assertEqual(data, {"cupcake": {
+                "id": self.cupcake.id,
+                "flavor": "Martian",
+                "size": "TooBig",
+                "rating": 10,
+                "image": "https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg"
+            }
+            })
+
+            self.assertEqual(Cupcake.query.count(), 1)
+
+    def test_update_cupacke_missing(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/123456789"
+            resp = client.patch(url, json=CUPCAKE_DATA_3)
+            self.assertEqual(resp.status_code, 404)
+
+    def test_delete_cupcake(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake.id}"
+            resp = client.delete(url)
+            self.assertEqual(resp.status_code, 200)
+
+            data = resp.json
+            self.assertEqual(data, {"message": "Deleted"})
+            self.assertEqual(Cupcake.query.count(), 0)
+
+    def test_update_cupacke_missing(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/123456789"
+            resp = client.patch(url, json=CUPCAKE_DATA_3)
+            self.assertEqual(resp.status_code, 404)

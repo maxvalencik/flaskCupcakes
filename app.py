@@ -8,14 +8,17 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///cupcakes'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = "oh-so-secret"
+app.config['SECRET_KEY'] = "vansusopen"
 
 connect_db(app)
 
 
+################################
+# HOME
+
 @app.route("/")
 def root():
-    """homepage."""
+    """homepage with cupcake form"""
     form = AddCupcakeForm()
 
     if form.validate_on_submit():
@@ -31,11 +34,13 @@ def root():
     return render_template("home.html")
 
 
-@app.route("/api/cupcakes")
+################################
+# GET Requests
+
+@app.route("/api/cupcakes", methods=["GET"])
 def list_cupcakes():
     """Return all cupcakes in system.
-
-    Returns JSON like:
+    Returns JSON:
         {cupcakes: [{id, flavor, rating, size, image}, ...]}
     """
 
@@ -43,11 +48,24 @@ def list_cupcakes():
     return jsonify(cupcakes=cupcakes)
 
 
+@app.route("/api/cupcakes/<int:cupcake_id>", methods=["GET"])
+def get_cupcake(cupcake_id):
+    """Return data on specific cupcake.
+    Returns JSON:
+        {cupcake: [{id, flavor, rating, size, image}]}
+    """
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id).to_dict()
+    return jsonify(cupcake=cupcake)
+
+
+################################
+# POST  Requests
+
 @app.route("/api/cupcakes", methods=["POST"])
 def create_cupcake():
     """Add cupcake, and return data about new cupcake.
-
-    Returns JSON like:
+    Returns JSON:
         {cupcake: [{id, flavor, rating, size, image}]}
     """
 
@@ -62,27 +80,17 @@ def create_cupcake():
     db.session.add(cupcake)
     db.session.commit()
 
-    # POST requests should return HTTP status of 201 CREATED
+    # return HTTP status of 201 CREATED
     return (jsonify(cupcake=cupcake.to_dict()), 201)
 
 
-@app.route("/api/cupcakes/<int:cupcake_id>")
-def get_cupcake(cupcake_id):
-    """Return data on specific cupcake.
-
-    Returns JSON like:
-        {cupcake: [{id, flavor, rating, size, image}]}
-    """
-
-    cupcake = Cupcake.query.get_or_404(cupcake_id)
-    return jsonify(cupcake=cupcake.to_dict())
-
+################################
+# PATCH  Requests
 
 @app.route("/api/cupcakes/<int:cupcake_id>", methods=["PATCH"])
 def update_cupcake(cupcake_id):
     """Update cupcake from data in request. Return updated data.
-
-    Returns JSON like:
+    Returns JSON:
         {cupcake: [{id, flavor, rating, size, image}]}
     """
 
@@ -100,6 +108,9 @@ def update_cupcake(cupcake_id):
 
     return jsonify(cupcake=cupcake.to_dict())
 
+
+################################
+# DELETE  Requests
 
 @app.route("/api/cupcakes/<int:cupcake_id>", methods=["DELETE"])
 def remove_cupcake(cupcake_id):

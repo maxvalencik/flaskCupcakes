@@ -15,7 +15,7 @@ def connect_db(app):
 
 
 class Cupcake(db.Model):
-    """Cupcake"""
+    """Cupcake table"""
 
     __tablename__ = "cupcakes"
 
