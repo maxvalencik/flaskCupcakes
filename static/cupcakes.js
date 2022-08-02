@@ -22,10 +22,10 @@ function generateHTML(cupcake) {
 
 async function showCupcakes() {
   const response = await axios.get(`${BASE_URL}/cupcakes`);
-
   for (let cupcake of response.data.cupcakes) {
-    let newCupcake = $(generateHTML(cupcake));
-    getElementById("#cupcakes-list").append(newCupcake);
+    let newCupcake = generateHTML(cupcake);
+    // let newCupcake = generateHTML(cupcake);
+    document.getElementById("cupcakes-list").insertAdjacentHTML('beforeend',newCupcake);
   }
 }
 
@@ -50,11 +50,12 @@ $("#new-cupcake-form").on("submit", async function (evt) {
   let newCupcake = $(generateCupcakeHTML(newCupcakeResponse.data.cupcake));
   getElementById("#cupcakes-list").append(newCupcake);
   getElementById("#new-cupcake-form").trigger("reset");
-});
+});*/
 
 
- handle clicking delete: delete cupcake 
+ /**handle clicking delete: delete cupcake*/ 
 
+ //Using jQuery .on() function -- $("#") selects elements of ID ...
 $("#cupcakes-list").on("click", ".delete-button", async function (evt) {
   evt.preventDefault();
   let $cupcake = $(evt.target).closest("div");
@@ -63,7 +64,6 @@ $("#cupcakes-list").on("click", ".delete-button", async function (evt) {
   await axios.delete(`${BASE_URL}/cupcakes/${cupcakeId}`);
   $cupcake.remove();
 });
-*/
 
 
-$(showCupcakes);
+showCupcakes();

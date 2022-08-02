@@ -23,13 +23,25 @@ def root():
     form = AddCupcakeForm()
 
     if form.validate_on_submit():
+
         flavor = form.flavor.data
         rating = form.rating.data
-        flash(f"Added {flavor} at {rating}/10")
-        return redirect("/api/cupcakes", 307)
+        size = form.size.data
+        image = form.photo_url.data or None
 
-    else:
-        return render_template("home.html", form=form)
+        cupcake = Cupcake(
+            flavor=flavor,
+            rating=rating,
+            size=size,
+            image=image
+        )
+
+        db.session.add(cupcake)
+        db.session.commit()
+
+        return redirect("/")
+
+    return render_template("home.html", form=form)
 
 
 ################################
@@ -41,7 +53,6 @@ def list_cupcakes():
     Returns JSON:
         {cupcakes: [{id, flavor, rating, size, image}, ...]}
     """
-
     cupcakes = [cupcake.to_dict() for cupcake in Cupcake.query.all()]
     return jsonify(cupcakes=cupcakes)
 
@@ -58,32 +69,8 @@ def get_cupcake(cupcake_id):
 
 
 ################################
-# POST  Requests
-
-@app.route("/api/cupcakes", methods=["POST"])
-def create_cupcake():
-    """Add cupcake, and return data about new cupcake.
-    Returns JSON:
-        {cupcake: [{id, flavor, rating, size, image}]}
-    """
-
-    data = request.json
-
-    cupcake = Cupcake(
-        flavor=data['flavor'],
-        rating=data['rating'],
-        size=data['size'],
-        image=data['image'] or None)
-
-    db.session.add(cupcake)
-    db.session.commit()
-
-    # return HTTP status of 201 CREATED
-    return (jsonify(cupcake=cupcake.to_dict()), 201)
-
-
-################################
 # PATCH  Requests
+
 
 @app.route("/api/cupcakes/<int:cupcake_id>", methods=["PATCH"])
 def update_cupcake(cupcake_id):
