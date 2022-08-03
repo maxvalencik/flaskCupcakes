@@ -6,7 +6,7 @@
 <ul id="cupcakes-list"></ul>
 
 <h2> Add Cupcakes! </h2>
-<form id="cupacke-add-form" method="POST">
+<form id="cupacke-add-form" method="POST" action="/api/cupcakes">
     {{ form.hidden_tag() }}
 
     {% for field in form

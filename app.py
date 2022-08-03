@@ -22,25 +22,6 @@ def root():
     """homepage with cupcake form"""
     form = AddCupcakeForm()
 
-    if form.validate_on_submit():
-
-        flavor = form.flavor.data
-        rating = form.rating.data
-        size = form.size.data
-        image = form.photo_url.data or None
-
-        cupcake = Cupcake(
-            flavor=flavor,
-            rating=rating,
-            size=size,
-            image=image
-        )
-
-        db.session.add(cupcake)
-        db.session.commit()
-
-        return redirect("/")
-
     return render_template("home.html", form=form)
 
 
@@ -67,6 +48,31 @@ def get_cupcake(cupcake_id):
     cupcake = Cupcake.query.get_or_404(cupcake_id).to_dict()
     return jsonify(cupcake=cupcake)
 
+################################
+# POST Requests
+
+
+@app.route("/api/cupcakes", methods=["POST"])
+def add_cupcakes():
+    form = AddCupcakeForm()
+    if form.validate_on_submit():
+
+        flavor = form.flavor.data
+        rating = form.rating.data
+        size = form.size.data
+        image = form.photo_url.data or None
+
+        cupcake = Cupcake(
+            flavor=flavor,
+            rating=rating,
+            size=size,
+            image=image
+        )
+
+        db.session.add(cupcake)
+        db.session.commit()
+
+    return redirect("/")
 
 ################################
 # PATCH  Requests

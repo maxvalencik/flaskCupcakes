@@ -30,29 +30,6 @@ async function showCupcakes() {
 }
 
 
-/** handle form for adding of new cupcakes 
-
-$("#new-cupcake-form").on("submit", async function (evt) {
-  evt.preventDefault();
-
-  let flavor = $("#form-flavor").val();
-  let rating = $("#form-rating").val();
-  let size = $("#form-size").val();
-  let image = $("#form-image").val();
-
-  const newCupcakeResponse = await axios.post(`${BASE_URL}/cupcakes`, {
-    flavor,
-    rating,
-    size,
-    image
-  });
-
-  let newCupcake = $(generateCupcakeHTML(newCupcakeResponse.data.cupcake));
-  getElementById("#cupcakes-list").append(newCupcake);
-  getElementById("#new-cupcake-form").trigger("reset");
-});*/
-
-
  /**handle clicking delete: delete cupcake*/ 
 
  //Using jQuery .on() function -- $("#") selects elements of ID ...
